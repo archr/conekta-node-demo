@@ -1,0 +1,52 @@
+mixin input(title, dataConekta)
+  .form-row
+    label
+      span=title
+      input(type="text" data-conekta=dataConekta)
+
+html
+  head
+
+  body
+    h2 Conekta Demo
+    form(action="/" method="POST" id="card-form")
+      span.card-errors
+      +input('Nombre del tarjetahabiente', 'card[name]')
+      +input('Número de tarjeta de crédito', 'card[number]')
+      +input('CVC', 'card[cvc]')
+      .form-row
+        label
+          span Fecha de expiración (MM/AAAA)
+          input(type="text" data-conekta="card[exp_month]")
+        span /
+          input(type="text" data-conekta="card[exp_year]")
+
+      button(type="submit") Suscribirse ahora!
+
+
+
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
+    script(type='text/javascript', src='https://conektaapi.s3.amazonaws.com/v0.3.0/js/conekta.js')
+    script.
+      Conekta.setPublishableKey('key_Hzq79JR2pMPkeqbe');
+
+      conektaSuccessResponseHandler = function(token){
+        var $form = $("#card-form");
+        console.log(token)
+        $form.append($("<input type=\"hidden\" name=\"conektaTokenId\" />").val(token.id));
+        $form.get(0).submit();
+      }
+
+      conektaErrorResponseHandler = function(response){
+        var  $form = $("#card-form");
+        $form.find(".card-errors").text(response.message);
+        $form.find("button").prop("disabled", false);
+      }
+
+      $("#card-form").submit(function(event) {
+        var $form = $(this);
+        $form.find("button").prop("disabled", true);
+        Conekta.token.create($form, conektaSuccessResponseHandler, conektaErrorResponseHandler);
+
+        return false;
+      });
