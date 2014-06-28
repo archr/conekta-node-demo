@@ -1,7 +1,6 @@
 logger = require 'morgan'
 bodyParser = require 'body-parser'
 express = require 'express'
-conekta = require 'conekta'
 request = require 'superagent'
 server = express()
 
